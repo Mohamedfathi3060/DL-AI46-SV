@@ -7,7 +7,7 @@ import numpy as np
 import random
 
 
-# we is making random seeds same
+# we are making random seeds same
 def set_seed(seed=42):
     random.seed(seed)
     np.random.seed(seed)
@@ -128,32 +128,24 @@ def train_model(model, loader, val_loader, epochs, lr=0.001, weight_decay=0.0):
 
 
 if __name__ == "__main__":
-    print("==================================================")
-    print("STEP 1: SANITY CHECK (Code Verification)")
+    print("STEP 1: SANITY CHECK")
     print("Goal: Overfit a single batch perfectly. Loss should approach 0.")
-    print("==================================================")
     sanity_model = SimpleModel()
     train_model(sanity_model, single_batch_loader, val_loader=None, epochs=50)
 
-    print("\n==================================================")
-    print("STEP 2: ESTABLISH A BASELINE (Good Enough)")
+    print("\nSTEP 2: ESTABLISH A BASELINE (Good Enough)")
     print("Goal: Train simple model on full data. Get a decent starting metric.")
-    print("==================================================")
     baseline_model = SimpleModel()
     train_model(baseline_model, trainloader, testloader, epochs=5)
 
-    print("\n==================================================")
-    print("STEP 3: REDUCE BIAS (Fix Underfitting)")
+    print("\nSTEP 3: REDUCE BIAS (Fix Underfitting)")
     print("Goal: Make the model complex enough to overfit the training data.")
     print("Observation: Train Acc will be very high, Val Acc will lag behind.")
-    print("==================================================")
     complex_model = ComplexModel()
     train_model(complex_model, trainloader, testloader, epochs=10)
 
-    print("\n==================================================")
-    print("STEP 4: REDUCE VARIANCE (Fix Overfitting - The Gold Standard)")
+    print("\nSTEP 4: REDUCE VARIANCE (Fix Overfitting - The Gold Standard)")
     print("Goal: Add Regularization (Dropout + L2 Weight Decay) to complex model.")
     print("Observation: Train Acc drops slightly, but Val Acc improves/stabilizes.")
-    print("==================================================")
     reg_model = RegularizedComplexModel()
     train_model(reg_model, trainloader, testloader, epochs=10, weight_decay=1e-4)
