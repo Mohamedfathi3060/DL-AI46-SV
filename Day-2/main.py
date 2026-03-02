@@ -7,14 +7,8 @@ import numpy as np
 import random
 
 
-# ==========================================
-# REPRODUCIBILITY SETUP
-# ==========================================
+# we is making random seeds same
 def set_seed(seed=42):
-    """
-    If we don't set the seed, every run will give different results.
-    We need this to be a strictly reproducible experiment!
-    """
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -27,31 +21,22 @@ def set_seed(seed=42):
 set_seed(42)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# ==========================================
-# DATA LOADING (FashionMNIST - A solid, complex-enough dataset)
-# ==========================================
+# downloading the clothes datas
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
 
-# Downloading and loading the training data
 trainset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
 
-# Downloading and loading the test data
 testset = torchvision.datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=False)
 
-# Extract a single sample/batch for our sanity check
+# taking only one batchs for testing
 single_batch = next(iter(trainloader))
 single_batch_loader = [(single_batch[0], single_batch[1])]
 
 
-# ==========================================
-# MODEL DEFINITIONS
-# ==========================================
-
+# this network are very simple
 class SimpleModel(nn.Module):
-    """A very basic baseline model. Just one hidden layer."""
-
     def __init__(self):
         super().__init__()
         self.net = nn.Sequential(
@@ -64,9 +49,8 @@ class SimpleModel(nn.Module):
     def forward(self, x): return self.net(x)
 
 
+# this network have more layers
 class ComplexModel(nn.Module):
-    """A deeper, wider model capable of memorizing the dataset (high capacity)."""
-
     def __init__(self):
         super().__init__()
         self.net = nn.Sequential(
@@ -81,16 +65,15 @@ class ComplexModel(nn.Module):
     def forward(self, x): return self.net(x)
 
 
+# dropping out some neurons so it not memorize
 class RegularizedComplexModel(nn.Module):
-    """The complex model, but now we apply Dropout to prevent overfitting."""
-
     def __init__(self):
         super().__init__()
         self.net = nn.Sequential(
             nn.Flatten(),
             nn.Linear(28 * 28, 512),
             nn.ReLU(),
-            nn.Dropout(0.4),  # Randomly zero out 40% of neurons
+            nn.Dropout(0.4),
             nn.Linear(512, 256),
             nn.ReLU(),
             nn.Dropout(0.4),
@@ -100,13 +83,10 @@ class RegularizedComplexModel(nn.Module):
     def forward(self, x): return self.net(x)
 
 
-# ==========================================
-# TRAINING LOOP HELPER
-# ==========================================
+# loop for learn the weights
 def train_model(model, loader, val_loader, epochs, lr=0.001, weight_decay=0.0):
     model.to(device)
     criterion = nn.CrossEntropyLoss()
-    # Weight decay adds L2 regularization!
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     for epoch in range(epochs):
@@ -127,7 +107,7 @@ def train_model(model, loader, val_loader, epochs, lr=0.001, weight_decay=0.0):
 
         train_acc = 100. * correct / total
 
-        # Validation Phase
+        # checking on valid datas
         val_acc = 0
         if val_loader:
             model.eval()
@@ -146,10 +126,6 @@ def train_model(model, loader, val_loader, epochs, lr=0.001, weight_decay=0.0):
             print(
                 f"Epoch [{epoch + 1}/{epochs}] Loss: {total_loss / len(loader):.4f} | Train Acc: {train_acc:.2f}%{val_str}")
 
-
-# ==========================================
-# EXPERIMENT PIPELINE (The Golden Rules)
-# ==========================================
 
 if __name__ == "__main__":
     print("==================================================")
@@ -180,5 +156,4 @@ if __name__ == "__main__":
     print("Observation: Train Acc drops slightly, but Val Acc improves/stabilizes.")
     print("==================================================")
     reg_model = RegularizedComplexModel()
-    # Notice the weight_decay parameter here! That's L2 Regularization.
     train_model(reg_model, trainloader, testloader, epochs=10, weight_decay=1e-4)
