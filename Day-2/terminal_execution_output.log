@@ -1,0 +1,37 @@
+$ python main.py
+==================================================
+STEP 1: SANITY CHECK (Code Verification)
+Goal: Overfit a single batch perfectly. Loss should approach 0.
+==================================================
+Epoch [5/50] Loss: 1.4521 | Train Acc: 68.75%
+Epoch [10/50] Loss: 0.8105 | Train Acc: 85.94%
+Epoch [15/50] Loss: 0.4371 | Train Acc: 89.06%
+Epoch [20/50] Loss: 0.2226 | Train Acc: 96.88%
+Epoch [25/50] Loss: 0.1130 | Train Acc: 100.00%
+Epoch [30/50] Loss: 0.0594 | Train Acc: 100.00%
+Epoch [35/50] Loss: 0.0336 | Train Acc: 100.00%
+Epoch [40/50] Loss: 0.0205 | Train Acc: 100.00%
+Epoch [45/50] Loss: 0.0135 | Train Acc: 100.00%
+Epoch [50/50] Loss: 0.0094 | Train Acc: 100.00%
+
+==================================================
+STEP 2: ESTABLISH A BASELINE (Good Enough)
+Goal: Train simple model on full data. Get a decent starting metric.
+==================================================
+Epoch [5/5] Loss: 0.3524 | Train Acc: 87.05% | Val Acc: 85.42%
+
+==================================================
+STEP 3: REDUCE BIAS (Fix Underfitting)
+Goal: Make the model complex enough to overfit the training data.
+Observation: Train Acc will be very high, Val Acc will lag behind.
+==================================================
+Epoch [5/10] Loss: 0.2851 | Train Acc: 89.43% | Val Acc: 87.11%
+Epoch [10/10] Loss: 0.1983 | Train Acc: 92.54% | Val Acc: 88.65%
+
+==================================================
+STEP 4: REDUCE VARIANCE (Fix Overfitting - The Gold Standard)
+Goal: Add Regularization (Dropout + L2 Weight Decay) to complex model.
+Observation: Train Acc drops slightly, but Val Acc improves/stabilizes.
+==================================================
+Epoch [5/10] Loss: 0.3842 | Train Acc: 85.81% | Val Acc: 86.94%
+Epoch [10/10] Loss: 0.3311 | Train Acc: 87.73% | Val Acc: 89.12%
